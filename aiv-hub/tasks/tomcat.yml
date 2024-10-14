@@ -1,0 +1,70 @@
+---
+#tomcat installation
+- name: Create the group
+  become: yes
+  group: 
+    name: aivadmin
+    state: present
+
+- name: Create the user
+  become: yes
+  user:
+    name: aivadmin
+    state: present
+    group: aivadmin
+
+- name: Create a Directory /opt/aiv
+  become: yes
+  file:
+    path: /opt/aiv
+    state: directory
+    owner: aivadmin
+    group: aivadmin
+
+
+- name: Create a Directory /opt/aiv/tomcat
+  become: yes
+  file:
+    path: /opt/aiv/tomcat
+    state: directory
+    mode: 0755
+    owner: aivadmin
+    group: aivadmin
+   
+- name: Download Tomcat using unarchive
+  become: yes
+  unarchive:
+    src: "{{download_tomcat_url}}"
+    dest: /opt/aiv/tomcat
+    mode: 0755
+    extra_opts: "--strip-components=1"
+    remote_src: yes
+    owner: aivadmin
+    group: aivadmin
+
+# - name: Creating a service file
+#   become: yes
+#   become_user: aivadmin
+#   copy: 
+#     content: |-
+#       [Unit]
+#       Description=Tomcat Service
+#       Requires=network.target
+#       After=network.target
+#       [Service]
+#       Type=forking
+#       Environment="CATALINA_PID=/opt/aiv/tomcat/logs/tomcat.pid"
+#       Environment="CATALINA_BASE=/opt/aiv/tomcat"
+#       Environment="CATALINA_HOME=/opt/aiv/tomcat"
+#       Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+#       ExecStart=/opt/aiv/tomcat/bin/startup.sh
+#       ExecStop=/opt/aiv/tomcat/bin/shutdown.sh
+#       Restart=on-abnormal
+#       [Install]
+#       WantedBy=multi-user.target
+#     dest: /etc/systemd/system/tomcat.service
+   
+# - name: Reload the SystemD to re-read configurations
+#   become: yes
+#   systemd:
+#     daemon-reload: yes

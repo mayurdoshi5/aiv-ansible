@@ -1,0 +1,13 @@
+---
+# vars file for aiv-hub
+postgres_root_user: postgres
+postgres_root_pass: root
+allow_world_readable_tmpfiles: true
+download_tomcat_url: "https://mirrors.estointernet.in/apache/tomcat/tomcat-9/v9.0.62/bin/apache-tomcat-9.0.62.tar.gz"
+path: /home/aivhub390002
+download_aiv_url: "https://aiv6.s3.us-east-2.amazonaws.com/aiv.tar.gz"
+download_aiv_repo_url: "https://aiv6.s3.us-east-2.amazonaws.com/repository.zip"
+download_aiv_data_url: "https://aiv6.s3.us-east-2.amazonaws.com/data.zip"
+repo_path: /opt/aiv/repo
+logs_path: /opt/aiv/logs
+tomcat_path: /opt/aiv/tomcat

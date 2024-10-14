@@ -1,0 +1,12 @@
+---
+#Java11 installation
+- name: Update APT package manager repositories cache
+  become: yes
+  apt:
+    update_cache: yes
+    
+- name: Install Java using Ansible
+  become: yes
+  apt:
+    name: openjdk-11-jdk
+    state: present

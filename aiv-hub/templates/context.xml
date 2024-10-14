@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/aiv">
+    <Resource auth="Container" driverClassName="org.postgresql.Driver" maxTotal="30" maxIdle="10" maxWaitMillis="10000" minIdle="5" name="jdbc/ActiveIDB" username="{{ postgres_root_user }}" password="{{ postgres_root_pass }}" url="jdbc:postgresql://localhost:5432/aiv6" type="javax.sql.DataSource" />
+
+        <Resource auth="Container" driverClassName="org.apache.derby.jdbc.EmbeddedDriver" maxTotal="30" maxIdle="10" maxWaitMillis="10000" minIdle="10" name="jdbc/classicmodels" username="ClassicModels" password="" url="jdbc:derby:jar:({{ tomcat_path }}/webapps/aiv/WEB-INF/lib/org.eclipse.birt.runtime_4.13.0-20230302.jar)BirtSample;create=false;user=ClassicModels;password=" type="javax.sql.DataSource" />
+
+        <Resource auth="Container" driverClassName="org.hsqldb.jdbcDriver" maxTotal="50" maxIdle="5" maxWaitMillis="10000" minIdle="10" name="jdbc/SampleData" username="pentaho_user" password="password" url="jdbc:hsqldb:file:{{ tomcat_path }}/data/sampledata" type="javax.sql.DataSource" />
+</Context>

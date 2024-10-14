@@ -1,0 +1,17 @@
+---
+# tasks file for aiv-hub
+- name: Install Postgres
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/postgres.yml"
+  tags: postgres
+
+- name: Install Java11
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/java11.yml"
+  tags: java11
+
+- name: Install Tomcat
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/tomcat.yml"
+  tags: tomcat
+  
+- name: Run the Jar File
+  ansible.builtin.include_tasks: "{{ role_path }}/tasks/playbook.yml"
+  tags: jar

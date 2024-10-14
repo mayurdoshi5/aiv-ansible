@@ -1,0 +1,7 @@
+---
+- hosts: gcp
+  gather_facts: no
+  tasks:
+    - name: Running aiv-hub Roles
+      include_role:
+        name: aiv-hub

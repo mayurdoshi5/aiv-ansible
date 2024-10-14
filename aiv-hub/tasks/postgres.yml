@@ -1,0 +1,108 @@
+---
+#Postgres installation task file
+- name: Update apt repo and cache on all Ubuntu boxes
+  become: yes
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    cache_valid_time: 3600
+
+- name: Upgrade all packages on servers
+  become: yes
+  apt:
+    upgrade: dist
+    force_apt_get: yes
+
+- name: Install required packages
+  become: yes
+  apt:
+    name:
+      - wget
+      - python3-psycopg2
+      - acl
+      - p7zip-full
+    state: latest
+
+- name: Set up Postgres 14 repo
+  become: yes
+  shell: |
+    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+
+- name: Install postgresql
+  become: yes
+  apt:
+    name: postgresql-14
+    update_cache: yes
+  notify:
+    - Enable Postgresql
+
+- name: Ensure PostgreSQL is listening on *
+  become: yes
+  lineinfile:
+    dest: /etc/postgresql/14/main/postgresql.conf
+    regexp: '^listen_addresses\s*='
+    line: "listen_addresses='*'"
+    state: present
+
+- name: Copy the pg_hba.conf file
+  become: yes
+  template:
+    src: pg_hba.conf
+    dest: /etc/postgresql/14/main/
+
+- name: Restart Postgresql
+  become: yes
+  systemd:
+    name: postgresql
+    state: restarted
+
+- name: Change trust identification to md5
+  become: yes
+  shell: /bin/sed -i '/^local/s/trust/md5/' /etc/postgresql/14/main/pg_hba.conf
+
+- name: Create a Superuser PostgreSQL database user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: '{{ postgres_root_user }}'
+    password: '{{ postgres_root_pass }}'
+    role_attr_flags: CREATEDB,SUPERUSER,CREATEROLE
+    encrypted: yes
+    state: present
+
+- name: Create a new database with name "aiv6"
+  postgresql_db:
+    name: aiv6
+
+- name: Create a new database with name "aiv_security"
+  postgresql_db:
+    name: aiv_security
+
+- name: Create a new database with name "demo"
+  postgresql_db:
+    name: demo
+
+- name: Copy the SQL file to the destination Server
+  template:
+    src: aiv_postgresql.sql
+    dest: "{{ path }}/aiv_postgresql.sql"
+
+- name: Copy the SQL file to the destination Server
+  template:
+    src: aiv5_security.sql
+    dest: "{{ path }}/aiv5_security.sql"
+
+- name: Copy the SQL file to the destination Server
+  template:
+    src: Products.sql
+    dest: "{{ path }}/Products.sql"
+
+- name: Run the SQL script to the aiv6
+  shell: PGPASSWORD='{{ postgres_root_pass }}' psql -h localhost -U '{{ postgres_root_user }}' -d aiv6 -f '{{ path }}'/aiv_postgresql.sql
+
+- name: Run the SQL script to the aiv_security
+  shell: PGPASSWORD='{{ postgres_root_pass }}' psql -h localhost -U '{{ postgres_root_user }}' -d aiv_security -f '{{ path }}'/aiv5_security.sql
+
+- name: Run the SQL script to the Demo
+  shell: PGPASSWORD='{{ postgres_root_pass }}' psql -h localhost -U '{{ postgres_root_user }}' -d demo -f '{{ path }}'/Products.sql

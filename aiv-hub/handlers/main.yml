@@ -1,0 +1,21 @@
+---
+# handlers file for aiv-hub
+- name: Restart Postgresql
+  systemd:
+    name: postgresql
+    state: restarted
+
+- name: Start Postgresql
+  systemd:
+    name: postgresql
+    state: started
+
+- name: Stop Postgresql
+  systemd:
+    name: postgresql
+    state: stopped
+
+- name: Enable Postgresql
+  systemd:
+    name: postgresql
+    enabled: yes

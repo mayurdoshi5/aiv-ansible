@@ -1,0 +1,93 @@
+---
+#Run Jar file
+- name: Create a Directory /opt/aiv/repo
+  become: yes
+  file:
+    path: /opt/aiv/repo
+    state: directory
+    owner: aivadmin
+    group: aivadmin
+
+- name: Create a Directory /opt/aiv/logs
+  become: yes
+  file:
+    path: /opt/aiv/logs
+    state: directory
+    owner: aivadmin
+    group: aivadmin
+
+- name: Download Aiv using unarchive
+  become: yes
+  unarchive:
+    src: "{{download_aiv_url}}"
+    dest: /opt/aiv/tomcat/webapps
+    remote_src: yes
+    owner: aivadmin
+    group: aivadmin
+
+- name: download zip file of repo
+  become: yes
+  get_url:
+    url: "{{download_aiv_repo_url}}"
+    dest: /tmp/
+
+- name: Extract the Zip File
+  become: yes
+  become_user: aivadmin
+  shell: 7z x /tmp/repository.zip -o/opt/aiv/repo -y 
+
+- name: download data file of repo
+  become: yes
+  get_url:
+    url: "{{download_aiv_data_url}}"
+    dest: /tmp/
+
+- name: Extract the Zip File
+  become: yes
+  become_user: aivadmin
+  shell: 7z x /tmp/data.zip -o/opt/aiv/tomcat -y 
+
+- name: Replace server.xml 
+  become: yes
+  template:
+    src: server.xml
+    dest: /opt/aiv/tomcat/conf/server.xml
+    owner: aivadmin
+    group: aivadmin
+
+- name: Copy setenv.sh in tomcat/bin
+  become: yes
+  template:
+    src: setenv.sh
+    dest: /opt/aiv/tomcat/bin/setenv.sh
+    owner: aivadmin
+    group: aivadmin
+
+- name: Make setenv.sh executable
+  become: yes
+  file:
+    path: /opt/aiv/tomcat/bin/setenv.sh
+    mode: u+x
+    owner: aivadmin
+    group: aivadmin
+
+- name: Replace settings.properties in WEB-INF
+  become: yes
+  template:
+    src: settings.properties
+    dest: /opt/aiv/tomcat/webapps/aiv/WEB-INF/classes
+    owner: aivadmin
+    group: aivadmin
+
+- name: Replace context.xml in META-INF
+  become: yes
+  template:
+    src: context.xml
+    dest: /opt/aiv/tomcat/webapps/aiv/META-INF
+    owner: aivadmin
+    group: aivadmin
+
+- name: Run Tomcat
+  become: yes
+  become_user: aivadmin
+  shell: /opt/aiv/tomcat/bin/startup.sh
