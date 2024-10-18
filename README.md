@@ -74,7 +74,7 @@ Before proceeding, ensure you have the following installed and configured on you
 
 ## Step 3: Download and Install the AIV6 Application
 
-1. Download the AIV6 application from [this link](https://aivhub-my.sharepoint.com/:u:/p/mayur/EQdr1GuW6YFHkZbIo5upmJMBqoy2H4_TUUnM2kllomK_dQ?e=zp0hl4).
+1. Download the AIV6 application from [this link](https://dist.aivhub.com/aiv.zip).
 
 ---
 
